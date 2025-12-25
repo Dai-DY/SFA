@@ -7,7 +7,7 @@ import os
 import cv2
 import numpy as np
 from pathlib import Path
-from src.parser import extract_target_from_instruction
+from src.get_target import extract_action_objects
 from src.segmenter import segment_target
 from PIL import Image
 
@@ -60,7 +60,10 @@ def process_video(video_path, view_name):
             img_path = f"/tmp/{name}_frame{idx}.png"
             cv2.imwrite(img_path, frame)
             try:
-                target = extract_target_from_instruction(INSTR)
+                result = extract_action_objects(INSTR)
+                source_object = result['source_object']
+                target = result['destination_object']
+                action = result['actions']
                 mask, bbox = segment_target(img_path, target)
                 out_dir = os.path.join(OUTDIR, view_name)
                 ensure_dir(out_dir)
